@@ -2,6 +2,7 @@ package com.poc.bookstore.advice;
 
 import com.poc.bookstore.dto.Response;
 import com.poc.bookstore.exception.InvalidAccessException;
+import com.poc.bookstore.exception.InvalidAuthorException;
 import com.poc.bookstore.exception.InvalidTokenException;
 import com.poc.bookstore.exception.NotFoundException;
 import com.poc.bookstore.exception.UnAuthorizedException;
@@ -39,9 +40,10 @@ public class BookStoreGlobalExceptionHandler extends ResponseEntityExceptionHand
                 HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(value = {DuplicateKeyException.class})
+    @ExceptionHandler(value = {DuplicateKeyException.class, InvalidAuthorException.class})
     public ResponseEntity<Response> handleDuplicateRequestExceptions(
             RuntimeException ex, WebRequest request) {
+
         return new ResponseEntity<>(new Response(HttpStatus.BAD_REQUEST.value(), request.getContextPath(), ex.getMessage(), new Date()),
                 HttpStatus.BAD_REQUEST);
     }

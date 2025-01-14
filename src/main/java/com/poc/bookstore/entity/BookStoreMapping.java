@@ -11,30 +11,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Entity
 @Table(name = "TBL_STORE_MAPPING")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Store_Mapping {
+public class BookStoreMapping {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "book_id")
-    private Integer bookId;
+    @Column(name = "book_isbn")
+    private String bookIsbn;
 
     @Column(name = "author_id")
     private Integer authorId;
-
-    @Column(name = "created_date")
-    private Date createdDate;
-
-    @Column(name = "created_by")
-    private Integer createdBy;
 
 }
