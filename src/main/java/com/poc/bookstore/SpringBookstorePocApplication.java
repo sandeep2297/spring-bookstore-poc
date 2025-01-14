@@ -1,4 +1,4 @@
-package com.poc.bookstore.spring_bookstore_poc;
+package com.poc.bookstore;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
