@@ -7,6 +7,7 @@ import com.poc.bookstore.dto.BookResponseDTO;
 import com.poc.bookstore.entity.Author;
 import com.poc.bookstore.entity.Book;
 import com.poc.bookstore.entity.BookStoreMapping;
+import com.poc.bookstore.exception.InvalidAccessException;
 import com.poc.bookstore.exception.InvalidAuthorException;
 import com.poc.bookstore.exception.NotFoundException;
 import com.poc.bookstore.repository.AuthorRepository;
@@ -128,4 +129,48 @@ public class BookStoreServiceImpl implements BookStoreService {
         return authorResponseDTO;
     }
 
+    @Transactional
+    public Book updateBookDetails(Integer userId, BookDTO bookDTO) {
+        Book book = bookRepository.findByIsbn(bookDTO.getBookIsbn())
+                .orElseThrow(() -> new NotFoundException("Book details for " + bookDTO.getBookIsbn()));
+        if (Boolean.TRUE.equals(checkIfInvalidAuthorExists(bookDTO.getAuthorIdList()))) {
+            throw new InvalidAuthorException("Author List has invalid author");
+        } else {
+            bookStoreMappingRepository.deleteByBookIsbn(bookDTO.getBookIsbn());
+            Date todayDate = new Date();
+            book.setTitle(bookDTO.getTitle());
+            book.setPublishYear(bookDTO.getPublishYear());
+            book.setPrice(bookDTO.getPrice());
+            book.setGenre(book.getGenre());
+            book.setModifiedBy(userId);
+            book.setModifiedDate(todayDate);
+            List<BookStoreMapping> bookStoreMappingList = new ArrayList<>();
+            for (Integer authorId : bookDTO.getAuthorIdList()) {
+                BookStoreMapping bookStoreMapping = BookStoreMapping.builder()
+                        .bookIsbn(bookDTO.getBookIsbn())
+                        .authorId(authorId).build();
+                bookStoreMappingList.add(bookStoreMapping);
+            }
+            bookStoreMappingRepository.saveAll(bookStoreMappingList);
+            return bookRepository.save(book);
+        }
+    }
+
+    @Transactional
+    public String deleteBookDetails(Integer userId, Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new NotFoundException("Book Details for id " + bookId));
+        if (Boolean.FALSE.equals(book.getCreatedBy().equals(userId))) {
+            throw new InvalidAccessException("User " + userId + "does not have authorized rights to perform this action");
+        } else {
+            List<BookStoreMapping> bookStoreMappingList = bookStoreMappingRepository.findByBookIsbn(book.getIsbn());
+            if (bookStoreMappingList.isEmpty()) {
+                throw new NotFoundException("Author details for book " + book.getTitle());
+            } else {
+                bookStoreMappingRepository.deleteAll(bookStoreMappingList);
+                bookRepository.delete(book);
+                return "OK";
+            }
+        }
+    }
 }

@@ -7,8 +7,11 @@ import com.poc.bookstore.service.BookStoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +59,24 @@ public class BookStoreController {
     @GetMapping("/author-details")
     public ResponseEntity<Response> getAuthorDetails(@RequestParam(value = "authorName", required = true) String authorName) {
         return new ResponseEntity<>(new Response(HttpStatus.OK.value(), bookStoreService.findByAuthorName(authorName)), HttpStatus.OK);
+    }
+
+    /**
+     * API Endpoint to update existing book details
+     * Saves and Returns the updated book details.
+     */
+    @PutMapping("/book-details")
+    public ResponseEntity<Response> updateBookDetails(@RequestHeader("userId") Integer userId, @RequestBody BookDTO bookDTO) {
+        return new ResponseEntity<>(new Response(HttpStatus.OK.value(), bookStoreService.updateBookDetails(userId, bookDTO)), HttpStatus.OK);
+    }
+
+    /**
+     * API Endpoint to delete book details
+     * Saves and Returns the delete book details.
+     */
+    @DeleteMapping("/book-details/{bookId}")
+    public ResponseEntity<Response> deleteBookDetails(@RequestHeader("userId") Integer userId, @PathVariable("bookId") Integer bookId) {
+        return new ResponseEntity<>(new Response(HttpStatus.OK.value(), bookStoreService.deleteBookDetails(userId, bookId)), HttpStatus.OK);
     }
 
 }

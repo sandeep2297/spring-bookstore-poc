@@ -17,4 +17,8 @@ public interface BookStoreService {
 
     AuthorResponseDTO findByAuthorName(String authorName);
 
+    Book updateBookDetails(Integer userId, BookDTO bookDTO);
+
+    String deleteBookDetails(Integer userId, Integer bookId);
+
 }

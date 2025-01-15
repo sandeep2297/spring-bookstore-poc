@@ -13,4 +13,6 @@ public interface BookStoreMappingRepository extends JpaRepository<BookStoreMappi
 
     List<BookStoreMapping> findByAuthorId(Integer authorId);
 
+    void deleteByBookIsbn(String isbn);
+
 }
